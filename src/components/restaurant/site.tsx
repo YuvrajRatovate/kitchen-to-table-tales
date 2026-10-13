@@ -1,9 +1,28 @@
-import { Link } from '@tanstack/react-router';
+import { Link, useLocation } from '@tanstack/react-router';
 import { ArrowUpRight, ArrowRight, Menu, X, Leaf, ChefHat, Utensils, Heart, Wine, Wheat, Sprout } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { dishes } from '@/lib/restaurant';
+import interior from '@/assets/interior.jpg';
+function useScrollReveals() {
+ const pathname = useLocation({select: location => location.pathname});
+ useEffect(() => {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const observer = new IntersectionObserver(entries => {
+   entries.forEach(entry => { if(entry.isIntersecting) { entry.target.setAttribute('data-motion', 'visible'); observer.unobserve(entry.target); } });
+  }, {threshold: 0.12});
+  const register = () => document.querySelectorAll('.section-head, .dish-card, .story-image, .story-copy, .journey-heading, .journey-step, .invitation .container, .visit-detail, .journey-scene').forEach(element => {
+   if(element.hasAttribute('data-motion')) return;
+   element.setAttribute('data-motion', 'pending'); observer.observe(element);
+  });
+  register();
+  const changes = new MutationObserver(register);
+  changes.observe(document.body, {childList:true, subtree:true});
+  return () => { observer.disconnect(); changes.disconnect(); };
+ }, [pathname]);
+}
 export function Header() {
+ useScrollReveals();
  const [open, setOpen] = useState(false);
  return <header className="site-header container"><Link to="/" className="wordmark" aria-label="Savor home">savor<span className="brand-star">✳</span></Link><nav className={`nav-links ${open ? 'open' : ''}`} aria-label="Main navigation">{([{to:'/',label:'Home'},{to:'/menu',label:'Our menu'},{to:'/story',label:'Our story'},{to:'/visit',label:'Visit us'}] as const).map(item=><Link key={item.to} to={item.to} activeProps={{className:'active'}} activeOptions={{exact:true}} onClick={()=>setOpen(false)}>{item.label}</Link>)}</nav><div className="header-cta"><span className="header-caption">Good food. Better company.</span><Button variant="restaurant" asChild><Link to="/visit">Find your table <ArrowUpRight size={15}/></Link></Button></div><Button className="mobile-menu" variant="ghost" size="icon" aria-label={open?'Close navigation':'Open navigation'} aria-expanded={open} onClick={()=>setOpen(!open)}>{open?<X/>:<Menu/>}</Button></header>;
 }
@@ -11,7 +30,7 @@ export function Footer() { return <footer className="footer container"><div clas
 export function Invitation() { return <section className="invitation"><div className="container"><div><h2>There’s a place for you at our table.</h2><p>Come hungry. Stay a little longer. Leave with a story.</p></div><Button variant="light" asChild><Link to="/visit">Plan your visit <ArrowUpRight/></Link></Button></div></section>; }
 export function DishGrid({items = dishes}: {items?: typeof dishes}) { return <div className="dish-grid">{items.map(dish=><article className="dish-card" key={dish.name}><div className="dish-photo"><img src={dish.image} alt={dish.name} width={1024} height={768} loading="lazy"/><span className="dish-tag">{dish.tag}</span></div><div className="dish-title"><h3>{dish.name}</h3><span className="dish-price">{dish.price}</span></div><p>{dish.description}</p></article>)}</div>; }
 const steps = [ {icon:Sprout,title:'Grown with care',copy:'The best stories begin with fresh, seasonal ingredients.',caption:'Your journey begins with the season’s finest.'}, {icon:ChefHat,title:'Made with heart',copy:'Handmade in our kitchen. Never rushed, always thoughtful.',caption:'Our chefs turn simple ingredients into something special.'}, {icon:Utensils,title:'Served with warmth',copy:'A warm welcome, a beautiful plate, a moment just for you.',caption:'Take your seat. We’ll take care of the rest.'}, {icon:Heart,title:'Remembered always',copy:'Good conversations. Last bites. Memories worth keeping.',caption:'A meal ends. The feeling stays with you.'} ];
-export function Journey() { const [active,setActive] = useState(0); useEffect(()=>{ if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; const id=window.setInterval(()=>setActive(x=>(x+1)%steps.length),4000); return ()=>window.clearInterval(id); },[]); return <section className="journey" id="journey"><div className="container"><div className="journey-heading"><span className="eyebrow">More than a meal</span><h2>A little journey. A lasting feeling.</h2></div><div className="journey-track">{steps.map((step,i)=><Button key={step.title} variant="ghost" className={`journey-step ${active===i?'selected':''}`} onClick={()=>setActive(i)} aria-pressed={active===i}><span className="journey-icon"><step.icon/></span><span className="step-number">0{i+1}</span><h3>{step.title}</h3><p>{step.copy}</p></Button>)}</div><p className="journey-caption">{steps[active]?.caption}</p></div></section>; }
+export function Journey() { const [active,setActive] = useState(0); useEffect(()=>{ if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; const id=window.setInterval(()=>setActive(x=>(x+1)%steps.length),4000); return ()=>window.clearInterval(id); },[]); const sceneImages = [dishes[0]?.image,dishes[1]?.image,interior,dishes[2]?.image]; return <section className="journey" id="journey"><div className="container"><div className="journey-heading"><span className="eyebrow">More than a meal</span><h2>A little journey. A lasting feeling.</h2></div><div className="journey-track" data-active={active}>{steps.map((step,i)=><Button key={step.title} variant="ghost" className={`journey-step ${active===i?'selected':''}`} onClick={()=>setActive(i)} aria-pressed={active===i}><span className="journey-icon"><step.icon/></span><span className="step-number">0{i+1}</span><h3>{step.title}</h3><p>{step.copy}</p></Button>)}</div><div className="journey-scene"><div className="journey-scene-image">{sceneImages.map((image,i)=><img key={i} src={image} width={1024} height={768} loading="lazy" className={active===i?'scene-active':''} alt={i===0?'Fresh seasonal burrata':i===1?'Handmade pasta from our kitchen':i===2?'A warm and welcoming dining table':'Tiramisu for a sweet ending'} aria-hidden={active!==i}/>)}</div><div className="journey-scene-copy" key={active}><span className="eyebrow">The Savor experience · 0{active+1}</span><h3>{steps[active]?.title}</h3><p className="journey-caption">{steps[active]?.caption}</p><div className="journey-timer" aria-hidden="true"><span/></div></div></div></div></section>; }
 export function Values() { return <div className="values-strip"><span><Leaf/>Seasonal ingredients</span><span><Wheat/>Handmade, every day</span><span><Wine/>Thoughtfully paired</span><span><Heart/>Shared with love</span></div>; }
 export function TextLink({to,children}: {to:'/'|'/menu'|'/story'|'/visit';children:React.ReactNode}) { return <Link to={to} className="text-link">{children}<ArrowRight size={15}/></Link>; }
 export function PageIntro({eyebrow,title,copy}: {eyebrow:string;title:string;copy:string}) { return <section className="page-intro"><span className="eyebrow">{eyebrow}</span><h1>{title}</h1><p>{copy}</p></section>; }
