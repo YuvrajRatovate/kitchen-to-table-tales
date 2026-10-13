@@ -1,4 +1,4 @@
 # Restaurant website
-- [ ] Create restaurant design and static pages.
-- [ ] Add animated kitchen-to-table journey and menu browsing.
-- [ ] Verify navigation and desktop/mobile layouts.
+- [x] Create restaurant design and static pages.
+- [x] Add animated kitchen-to-table journey and menu browsing.
+- [x] Verify navigation and desktop/mobile layouts.
