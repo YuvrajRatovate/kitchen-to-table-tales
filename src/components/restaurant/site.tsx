@@ -17,7 +17,7 @@ function useScrollReveals() {
   });
   register();
   const changes = new MutationObserver(register);
-  changes.observe(document.querySelector('main') ?? document.body, {childList:true, subtree:true});
+  changes.observe(document.body, {childList:true, subtree:true});
   return () => { observer.disconnect(); changes.disconnect(); };
  }, [pathname]);
 }
