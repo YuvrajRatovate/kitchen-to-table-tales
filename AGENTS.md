@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep shared restaurant navigation, footer, and journey in reusable components; content pages use TanStack file routes so each page has its own metadata.
+- Keep menu data in a browser-safe module and all visual styles in the global semantic design system; this static site does not submit reservations or collect personal data.

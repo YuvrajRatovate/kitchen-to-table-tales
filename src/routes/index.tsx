@@ -1,24 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
-
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
-export const Route = createFileRoute("/")({
-  component: Index,
-});
-
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { ArrowUpRight, ArrowDown, ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { DishGrid, Journey, Values, Invitation, TextLink } from '@/components/restaurant/site';
+import { pageHead } from '@/lib/restaurant';
+import hero from '@/assets/restaurant-hero.jpg';
+import interior from '@/assets/interior.jpg';
+export const Route = createFileRoute('/')({head:()=>pageHead('Savor — Good food. Better company.','Seasonal Italian-inspired food, handmade with heart. Discover the menu and the kitchen-to-table experience at Savor.'),component:Index});
+function Index() { return <main><section className="hero"><img className="hero-image" src={hero} width={1920} height={1024} alt="Fresh burrata with heirloom tomatoes and basil on a green linen table" fetchPriority="high"/><div className="hero-content container reveal"><span className="eyebrow">Seasonal. Soulful. Shared.</span><h1>Savor the food.<br/>Stay for the <em>feeling.</em></h1><p className="hero-copy">Honest ingredients. Thoughtful plates.<br/>A place where good food brings people together.</p><div className="hero-actions"><Button variant="restaurant" asChild><Link to="/menu">Explore our menu <ArrowUpRight/></Link></Button><Link className="hero-link" to="/story">A little about us <ArrowRight size={14}/></Link></div></div><div className="hero-bottom container"><div className="hero-rating"><span className="stars">★★★★★</span><span>Made for moments worth sharing</span></div><a href="#journey" className="scroll-link">From our kitchen to your table <ArrowDown size={16}/></a></div></section><Values/><section className="section container"><div className="section-head"><div><span className="eyebrow">A taste of Savor</span><h2>Simple ingredients. Extraordinary plates.</h2><p>A few favourites, made with a lot of love.</p></div><TextLink to="/menu">Discover the menu</TextLink></div><DishGrid/></section><Journey/><section className="section container story-grid"><img className="story-image" src={interior} alt="Sunlit Savor dining room with green seating and beautifully set tables" width={1536} height={1024} loading="lazy"/><div className="story-copy"><span className="eyebrow">Our table. Your story.</span><h2>Food tastes better<br/>when you feel at home.</h2><p>We believe the best meals aren’t just about what’s on the plate. They’re about the people around the table, the conversations that linger, and the feeling of being right where you belong.</p><TextLink to="/story">Get to know Savor</TextLink><div className="story-signature">With love, the Savor family</div></div></section><Invitation/></main>; }
